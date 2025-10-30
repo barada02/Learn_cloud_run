@@ -1,0 +1,17 @@
+{
+  "name": "fastapi-frontend",
+  "version": "1.0.0",
+  "description": "Simple frontend for FastAPI Cloud Run demo",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "keywords": ["fastapi", "frontend", "cloud-run"],
+  "author": "Your Name",
+  "license": "MIT"
+}
