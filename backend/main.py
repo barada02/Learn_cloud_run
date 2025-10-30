@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import random
 from dotenv import load_dotenv
@@ -11,6 +12,15 @@ app = FastAPI(
     title="Google Cloud Run FastAPI Demo",
     description="A simple FastAPI application for learning Google Cloud Run deployment",
     version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
 )
 
 @app.get("/")

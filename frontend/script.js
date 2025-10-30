@@ -13,19 +13,28 @@ async function makeApiCall(endpoint, responseElementId) {
         responseElement.textContent = 'Loading...';
         responseElement.className = 'response-box loading';
         
+        console.log(`🔍 Making API call to: ${BACKEND_URL}${endpoint}`);
+        
         const response = await fetch(`${BACKEND_URL}${endpoint}`, {
             method: 'GET',
+            mode: 'cors', // Explicitly enable CORS
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         });
         
+        console.log(`📡 Response status: ${response.status}`);
+        console.log(`📡 Response headers:`, response.headers);
+        
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error(`❌ Response error:`, errorText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}\nDetails: ${errorText}`);
         }
         
         const data = await response.json();
+        console.log(`✅ Response data:`, data);
         
         // Show success state
         responseElement.textContent = JSON.stringify(data, null, 2);
@@ -33,13 +42,32 @@ async function makeApiCall(endpoint, responseElementId) {
         
         return data;
     } catch (error) {
+        // Enhanced error handling
+        let errorMessage = `Error: ${error.message}`;
+        
+        // Check for common CORS error
+        if (error.message.includes('CORS') || error.message.includes('fetch')) {
+            errorMessage += '\n\n🔒 CORS Issue: The backend needs CORS enabled to allow frontend access.';
+        }
+        
+        // Check for network error
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            errorMessage += '\n\n🌐 Network Issue: Check if the backend URL is accessible.';
+            errorMessage += `\n🔗 Backend URL: ${BACKEND_URL}${endpoint}`;
+        }
+        
+        console.error('❌ API call failed:', error);
+        console.error('🔍 Full error details:', {
+            endpoint: `${BACKEND_URL}${endpoint}`,
+            error: error.message,
+            stack: error.stack
+        });
+        
         // Show error state
-        const errorMessage = `Error: ${error.message}`;
         responseElement.textContent = errorMessage;
         responseElement.className = 'response-box error';
         
-        console.error('API call failed:', error);
-        showErrorModal(`Failed to fetch from ${endpoint}`, error.message);
+        showErrorModal(`Failed to fetch from ${endpoint}`, errorMessage);
         
         throw error;
     }
@@ -263,13 +291,46 @@ async function makeApiCallWithPerformance(endpoint, responseElementId) {
     }
 }
 
+// Simple backend connectivity test
+async function testBackendConnectivity() {
+    console.log('🔍 Testing backend connectivity...');
+    
+    try {
+        // Try a simple fetch without CORS first
+        const response = await fetch(`${BACKEND_URL}/`, {
+            method: 'HEAD',  // HEAD request is lighter
+            mode: 'no-cors'  // Bypass CORS for basic connectivity test
+        });
+        
+        console.log('✅ Backend is reachable (basic connectivity test passed)');
+        return true;
+    } catch (error) {
+        console.error('❌ Backend connectivity test failed:', error);
+        showErrorModal('Backend Connectivity Issue', 
+            `Cannot reach the backend at: ${BACKEND_URL}\n\n` +
+            'Possible issues:\n' +
+            '• Backend service is down\n' +
+            '• Wrong URL\n' +
+            '• Network connectivity problems\n\n' +
+            'Please check the backend URL and try again.'
+        );
+        return false;
+    }
+}
+
 // Health check on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Automatically check health when page loads
-    setTimeout(() => {
-        console.log('🏥 Running automatic health check...');
-        fetchHealth().catch(() => {
-            console.warn('⚠️ Initial health check failed - backend might be unavailable');
-        });
+    // Test backend connectivity first
+    setTimeout(async () => {
+        console.log('🔍 Running backend connectivity test...');
+        const isConnected = await testBackendConnectivity();
+        
+        if (isConnected) {
+            console.log('🏥 Running automatic health check...');
+            fetchHealth().catch((error) => {
+                console.warn('⚠️ Health check failed but backend is reachable - likely CORS issue');
+                console.error('Health check error:', error);
+            });
+        }
     }, 1000);
 });
