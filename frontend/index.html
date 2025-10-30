@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Cloud Run Frontend</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 FastAPI Cloud Run Demo</h1>
+            <p>Frontend interface for testing Google Cloud Run API endpoints</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Welcome Section -->
+            <section class="api-section">
+                <div class="section-header">
+                    <h2>👋 Welcome Endpoint</h2>
+                    <button class="btn btn-primary" onclick="fetchWelcome()">Get Welcome Message</button>
+                </div>
+                <div class="response-container">
+                    <pre id="welcome-response" class="response-box">Click the button to fetch welcome message...</pre>
+                </div>
+            </section>
+
+            <!-- Secret Section -->
+            <section class="api-section">
+                <div class="section-header">
+                    <h2>🔐 Secret Endpoint</h2>
+                    <button class="btn btn-secondary" onclick="fetchSecret()">Get Secret Data</button>
+                </div>
+                <div class="response-container">
+                    <pre id="secret-response" class="response-box">Click the button to fetch secret data...</pre>
+                </div>
+            </section>
+
+            <!-- Random Section -->
+            <section class="api-section">
+                <div class="section-header">
+                    <h2>🎲 Random Endpoint</h2>
+                    <button class="btn btn-accent" onclick="fetchRandom()">Get Random Data</button>
+                </div>
+                <div class="response-container">
+                    <pre id="random-response" class="response-box">Click the button to fetch random data...</pre>
+                </div>
+            </section>
+
+            <!-- Health Check Section -->
+            <section class="api-section">
+                <div class="section-header">
+                    <h2>❤️ Health Check</h2>
+                    <button class="btn btn-success" onclick="fetchHealth()">Check Health</button>
+                </div>
+                <div class="response-container">
+                    <pre id="health-response" class="response-box">Click the button to check service health...</pre>
+                </div>
+            </section>
+
+            <!-- All Endpoints Section -->
+            <section class="api-section">
+                <div class="section-header">
+                    <h2>🔄 Test All Endpoints</h2>
+                    <button class="btn btn-primary btn-large" onclick="fetchAll()">Test All Endpoints</button>
+                </div>
+                <div class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Fetching data from all endpoints...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Backend URL: <code id="backend-url">https://learn-cloud-run-backend-797563351214.us-central1.run.app</code></p>
+            <p>Built with ❤️ for Google Cloud Run learning</p>
+        </footer>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Error</h3>
+                <p id="error-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
